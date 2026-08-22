@@ -70,7 +70,9 @@ export class IngestWorker extends EventEmitter {
   async handle(blip) {
     if (!isCandidate(blip)) return;
 
-    const place = locate(blip.lat, blip.lon);
+    // Pass the whole blip so the geofence can reject overflights. Passing
+    // bare coordinates silently disables the altitude test.
+    const place = locate(blip);
     if (!place) return;
 
     // A test-block frame only counts at a site that builds its type.

@@ -119,11 +119,17 @@ export function assess({ blip, place, candidate, world }) {
   // aircraft delivered years ago. Ask "is this a new-build?" first; ask
   // "where does it go?" only once the answer is yes.
 
-  if (isRevenueCallsign(blip.flight) && !candidate?.seen_factory) {
+  // A revenue callsign is decisive on its own. It previously deferred to
+  // seen_factory, which made that flag a permanent exemption from the single
+  // most reliable in-service signal we have: one stray factory sighting and
+  // an airliner flying scheduled routes could still be claimed as an
+  // undelivered aircraft. Nothing a carrier flies for revenue is awaiting
+  // delivery, whatever it was seen near beforehand.
+  if (isRevenueCallsign(blip.flight)) {
     return {
       decision: "REJECT",
-      reason: `${blip.flight} is a revenue callsign and this frame has never been ` +
-              `seen at a factory — it is an in-service aircraft, not a delivery`,
+      reason: `${blip.flight} is a revenue callsign — this aircraft is in ` +
+              `service, not awaiting delivery`,
     };
   }
 

@@ -167,5 +167,32 @@ console.log("\nautomatic identity resolution\n");
   ok("no slots yields null rather than throwing", chooseSlot([]) === null);
 }
 
+/* ---------- regression: the HZ-ARE false bind, 17 August 2026 ---------- */
+
+{
+  // An in-service Saudia 787 was recorded at Hamburg-Finkenwerder while
+  // cruising over it, which set seen_factory and disarmed every check.
+  const v = assess({
+    blip: { hex: "71011E", reg: "HZ-ARE", t: "B789", flight: "SVA1044", ts: Date.now() },
+    place: { icao: "OERK" },
+    candidate: proven({ seen_factory: true }),
+    world: world(),
+  });
+  ok("a revenue callsign is rejected even with seen_factory set",
+     v.decision === "REJECT", JSON.stringify(v));
+}
+
+{
+  const v = assess({
+    blip: { hex: "71011E", reg: "HZ-ARE", t: "B789", flight: "", ts: Date.now() },
+    place: { icao: "EDHI" },
+    candidate: proven({ seen_factory: true }),
+    world: world(),
+  });
+  ok("without a callsign a factory sighting still binds — the ceiling, not " +
+     "this rule, is what keeps overflights out",
+     v.decision === "BIND", JSON.stringify(v));
+}
+
 console.log(`\n${pass} passed, ${fail} failed\n`);
 process.exit(fail ? 1 : 0);
