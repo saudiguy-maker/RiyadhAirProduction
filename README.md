@@ -1,7 +1,23 @@
-# Riyadh Air Delivery Watch
+# Saudi Fleet Delivery Watch
 
-Live production, test and delivery tracking for all 158 firm airframes —
-67 Boeing 787s, 31 A350-1000s, 60 A321neos.
+Live production, test and delivery tracking across four Saudi carriers —
+444 airframes outstanding.
+
+| Carrier | Outstanding | Types |
+|---|---|---|
+| Riyadh Air | 158 | 787-9, 787-10, A350-1000, A321neo |
+| flynas | 171 | A320neo, A321neo, A330-900 |
+| flyadeal | 61 | A320neo, A321neo, A330-900 |
+| Saudia | 54 | A320neo family |
+
+This is a **delivery** tracker, not a fleet tracker. Only aircraft still to be
+handed over appear. An A320 delivered in 2014 has no meaningful position on a
+production lifecycle rail, so in-service fleets are deliberately absent.
+
+Saudia's outstanding 787-9 and 787-10 deliveries are real but carry no
+published per-variant backlog figure, so that order line is seeded at zero
+rather than guessed. Fill it in `ingest/config/operators.js` when a source
+confirms it.
 
 ```
 ingest/     ADS-B worker: geofences, providers, dedup, stage inference
@@ -12,6 +28,12 @@ web/        React PWA, installable on an iPhone home screen
 Milestones flow one way: ADS-B fix → geofence → binding → inference → dedup →
 Postgres → WebSocket → your phone. First flight reaches the screen while the
 aircraft is still climbing out.
+
+Ten sites cannot all be swept every five seconds — the free feeds rate limit
+to about one request a second. Factories sweep every tick, because first
+flight is the event worth having in seconds. Delivery destinations sweep every
+third tick: a delivery flight runs six to thirteen hours, so fifteen seconds
+of latency on arrival is invisible.
 
 ---
 
