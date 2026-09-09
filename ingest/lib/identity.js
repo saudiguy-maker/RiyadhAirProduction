@@ -28,7 +28,7 @@
  * reversible. Automatic does not mean unaccountable.
  */
 
-import { OPERATORS, operatorOfReg } from "../config/operators.js";
+import { OPERATORS, operatorOfReg, isFerryCallsign } from "../config/operators.js";
 import { SITES } from "../config/sites.js";
 import { FLEET_TYPES, CALLSIGNS } from "../config/watchlist.js";
 
@@ -65,7 +65,7 @@ export function isManufacturerCallsign(flight) {
  *  track, unless we were already tracking it through its handover. */
 export function isRevenueCallsign(flight) {
   const cs = (flight ?? "").trim().toUpperCase();
-  if (!cs) return false;
+  if (!cs || isFerryCallsign(cs)) return false;
   return Object.values(OPERATORS).some((o) => o.callsign.test(cs));
 }
 
@@ -110,6 +110,10 @@ export function assess({ blip, place, candidate, world }) {
     return { decision: "REJECT", reason: `${reg} is already bound to another airframe` };
   }
 
+  const supported = OPERATORS[operator].orders.some(o => o.icao_type === type ||
+    (o.type_code === "787-9/-10" && type === "B78X"));
+  if (!supported) return { decision: "REJECT", reason: `${operator} has no supported order for ${type}` };
+
   // --- the in-service filter ---
   //
   // This runs BEFORE any question about order slots, and the ordering is the
@@ -134,7 +138,7 @@ export function assess({ blip, place, candidate, world }) {
   }
 
   if (at && isHomeSite(at) && !isFactorySite(at) && !candidate?.seen_factory
-      && !isManufacturerCallsign(blip.flight)) {
+      && !isManufacturerCallsign(blip.flight) && !isFerryCallsign(blip.flight)) {
     return {
       decision: "HOLD",
       reason: `seen only at ${at}, which the existing fleet uses daily; ` +
@@ -170,7 +174,7 @@ export function assess({ blip, place, candidate, world }) {
     });
   }
 
-  if (isManufacturerCallsign(blip.flight)) {
+  if (isManufacturerCallsign(blip.flight) || isFerryCallsign(blip.flight)) {
     return gate(candidate, {
       decision: "BIND", operator, reg, type,
       reason: `${reg} flying as ${blip.flight}, a manufacturer callsign`,
@@ -234,3 +238,4 @@ export function chooseSlot(slots) {
     return na - nb;
   })[0];
 }
+

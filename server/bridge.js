@@ -3,13 +3,17 @@ import { WebSocketServer } from "ws";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { createPool, createDb } from "./db.js";
+import { createPool, createDb, migrate } from "./db.js";
 import { createWorker } from "../ingest/worker.js";
+
+import { importSnapshots, bundledSnapshots, orderBook } from "./orders.js";
 
 const __dir = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT ?? 8080);
 
 const pool = createPool();
+await migrate(pool);
+await importSnapshots(pool, bundledSnapshots());
 const db = createDb(pool);
 const app = express();
 const server = http.createServer(app);
@@ -46,6 +50,11 @@ wss.on("connection", (ws) => { ws.isAlive = true; ws.on("pong", () => { ws.isAli
 /* ---------- API ---------- */
 
 app.use(express.json());
+
+app.get("/api/orders", async (_req, res) => {
+  try { res.json(await orderBook(pool)); }
+  catch (e) { res.status(500).json({ error: e.message }); }
+});
 
 app.get("/api/roster", async (_req, res) => {
   try { res.json(await db.roster()); }
@@ -103,7 +112,7 @@ app.delete("/api/identity/:bindId", async (req, res) => {
 app.get("/api/health", async (_req, res) => {
   try {
     await pool.query("SELECT 1");
-    res.json({ ok: true, clients: clients.size, feeds: worker ? Object.fromEntries(worker.pool.health) : {} });
+    res.json({ ok: true, ingest: worker ? "running" : "disabled", clients: clients.size, feeds: worker ? Object.fromEntries(worker.pool.health) : {} });
   } catch (e) { res.status(503).json({ ok: false, error: e.message }); }
 });
 
@@ -174,3 +183,4 @@ const shutdown = async () => {
 };
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
+

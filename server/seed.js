@@ -65,16 +65,6 @@ async function main() {
         }
       }
 
-      for (let k = named.length; k < o.qty_firm; k++) {
-        await pool.query(
-          `INSERT INTO airframe
-             (id, order_line_id, operator, manufacturer, type_code, icao_type,
-              current_stage, identity_source)
-           VALUES ($1,$2,$3,$4,$5,$6,'ORDERED','projected')`,
-          [`${op.id}-${o.type_code}-${k + 1}`, orderId, op.id,
-           o.manufacturer, o.type_code, o.icao_type]);
-      }
-
       console.log(`  ${o.type_code.padEnd(16)} ${String(o.qty_firm).padStart(3)}  ` +
                   `${named.length} named, ${o.qty_firm - named.length} awaiting identity`);
     }
@@ -109,3 +99,4 @@ async function main() {
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
+

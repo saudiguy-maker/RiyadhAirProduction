@@ -45,45 +45,38 @@ class RateLimiter {
   }
 }
 
-async function getJSON(url, { retries = 3 } = {}) {
-  let delay = 800;
-  for (let i = 0; i <= retries; i++) {
+export async function getJSON(url, { retries = 1, headers = {}, timeoutMs = 8000 } = {}) {
+  for (let i = 0; ; i++) {
     try {
-      const ctrl = new AbortController();
-      const t = setTimeout(() => ctrl.abort(), 8000);
-      const res = await fetch(url, { headers: { "User-Agent": UA }, signal: ctrl.signal });
-      clearTimeout(t);
-      if (res.status === 429) throw new Error("rate limited");
-      if (res.status === 403 || res.status === 401) {
-        // Retrying a refusal is pointless and expensive. Three retries with
-        // backoff cost ~6 s per site; across ten geofences that is enough to
-        // push the sweep past the time an aircraft spends inside one.
-        const e = new Error(`HTTP ${res.status} — blocked, not transient`);
-        e.permanent = true;
+      const res = await fetch(url, {
+        headers: { "User-Agent": UA, ...headers }, signal: AbortSignal.timeout(timeoutMs),
+      });
+      if (!res.ok) {
+        const e = new Error(`HTTP ${res.status}`);
+        e.permanent = res.status >= 400 && res.status < 500 && res.status !== 429;
         throw e;
       }
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return await res.json();
     } catch (err) {
-      if (err.permanent || i === retries) throw err;
-      await new Promise((r) => setTimeout(r, delay + Math.random() * 400));
-      delay *= 2;
+      if (err.permanent || i >= retries) throw err;
+      await new Promise(r => setTimeout(r, 800 * 2 ** i));
     }
   }
 }
 
-/** Normalise whatever the provider returns into one shape. */
-const normalise = (a) => ({
-  hex: (a.hex ?? a.icao ?? "").toUpperCase().replace(/^~/, ""),
-  reg: a.r ?? a.reg ?? null,
-  t: a.t ?? a.type ?? null,
-  flight: (a.flight ?? "").trim() || null,
-  lat: a.lat, lon: a.lon,
-  alt_baro: a.alt_baro, alt_geom: a.alt_geom,
-  gs: a.gs, track: a.track,
-  seen: a.seen ?? 0,
-  ts: Date.now(),
-});
+/** Position age, not request time, determines which observation is newest. */
+export const normalise = (a) => {
+  const age = Number(a.seen_pos ?? a.seen ?? 0);
+  return {
+    hex: String(a.hex ?? a.icao ?? "").toUpperCase(),
+    reg: (a.r ?? a.reg)?.trim().toUpperCase() || null,
+    t: (a.t ?? a.type)?.trim().toUpperCase() || null,
+    flight: (a.flight ?? "").trim().toUpperCase() || null,
+    lat: a.lat, lon: a.lon, alt_baro: a.alt_baro, alt_geom: a.alt_geom,
+    gs: a.gs, track: a.track, seen: age,
+    ts: Date.now() - age * 1000,
+  };
+};
 
 export class AirplanesLive {
   constructor() { this.name = "airplanes.live"; this.rl = new RateLimiter(1); }
@@ -117,15 +110,10 @@ export class AdsbExchange {
     if (!this.key) return [];
     await this.rl.wait();
     const url = `https://adsbexchange-com1.p.rapidapi.com/v2/lat/${lat}/lon/${lon}/dist/${Math.round(radiusNm)}/`;
-    const res = await fetch(url, {
-      headers: {
-        "X-RapidAPI-Key": this.key,
-        "X-RapidAPI-Host": "adsbexchange-com1.p.rapidapi.com",
-        "User-Agent": UA,
-      },
-    });
-    if (!res.ok) throw new Error(`ADSBX HTTP ${res.status}`);
-    const j = await res.json();
+    const j = await getJSON(url, { headers: {
+      "X-RapidAPI-Key": this.key,
+      "X-RapidAPI-Host": "adsbexchange-com1.p.rapidapi.com",
+    } });
     return (j.ac ?? []).map(normalise);
   }
 }
@@ -199,11 +187,15 @@ export class ProviderPool {
       this.strikes.set(p.name, 0);
       this.health.set(p.name, { ok: true, at: Date.now(), count: s.value.length });
       for (const b of s.value) {
-        if (!b.hex || b.lat == null) continue;
+        if (!/^[0-9A-F]{6}$/.test(b.hex ?? "") ||
+            !Number.isFinite(b.lat) || !Number.isFinite(b.lon) ||
+            Math.abs(b.lat) > 90 || Math.abs(b.lon) > 180 ||
+            !Number.isFinite(b.seen ?? 0) || (b.seen ?? 0) < 0 || (b.seen ?? 0) > 60) continue;
         const prev = merged.get(b.hex);
-        if (!prev || (b.seen ?? 99) < (prev.seen ?? 99)) merged.set(b.hex, b);
+        if (!prev || (b.seen ?? 99) < (prev.seen ?? 99)) merged.set(b.hex, { ...b, provider: p.name });
       }
     });
     return [...merged.values()];
   }
 }
+

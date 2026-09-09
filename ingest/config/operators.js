@@ -1,15 +1,8 @@
 /**
- * OPERATORS — one object per carrier. Everything carrier-specific lives here
- * so the rest of the system stays operator-agnostic, exactly as
- * MANUFACTURERS does for builders.
- *
- * This is a DELIVERY tracker, not a fleet tracker. Every count below is
- * outstanding backlog — aircraft still to be handed over. Already-flying
- * aircraft are deliberately absent; an A320 delivered in 2014 has no
- * meaningful position on a production lifecycle rail.
- *
- * Sources current to 2026-08-13. Backlogs move; treat this file as data to
- * be reconciled, not as settled fact.
+ * Carrier identity configuration and legacy allocation hints.
+ * Quantities are retained for compatibility with older seeded databases;
+ * they are NOT the current order book. Sourced, dated figures live in
+ * data/orders.json and order_snapshot. Do not sum these as backlog.
  */
 
 export const OPERATORS = {
@@ -129,3 +122,4 @@ export const backlogOf = (id) =>
 
 export const TOTAL_BACKLOG = Object.keys(OPERATORS).reduce(
   (n, id) => n + backlogOf(id), 0);
+

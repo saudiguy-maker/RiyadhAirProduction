@@ -144,7 +144,7 @@ const check = (name, fn) => { fn(); console.log(`  ✓ ${name}`); pass++; };
 
   console.log("\noperators");
 
-  ok("four carriers, 444 airframes outstanding", () => {
+  ok("four carriers retain the legacy allocation configuration", () => {
     A.equal(Object.keys(O.OPERATORS).length, 4);
     A.equal(O.TOTAL_BACKLOG, 444);
   });
@@ -173,3 +173,4 @@ const check = (name, fn) => { fn(); console.log(`  ✓ ${name}`); pass++; };
 
   console.log(`\n${n} operator checks passed\n`);
 })();
+

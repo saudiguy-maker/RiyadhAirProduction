@@ -37,14 +37,14 @@ export function inferGround(blip, place) {
  * other than where the airframe was built.
  */
 export function inferFirstFlight({ place, sortie, ctx }) {
-  if (!ctx.neverSeenBefore) return null;
+  if (!ctx.neverSeenBefore || STAGE_INDEX[ctx.currentStage] >= STAGE_INDEX.FIRST) return null;
   if (!sortie && !ctx.airborne) return null;
   const departed = sortie?.departed ?? place?.icao;
   if (!departed || !siteRoles(departed, "FIRST")) return null;
   return {
     stage: "FIRST",
-    confidence: 0.95,
-    why: `first airborne contact over ${departed}`,
+    confidence: 0.65,
+    why: `first observed airborne contact over ${departed}; first flight date unconfirmed`,
   };
 }
 
@@ -128,7 +128,7 @@ export function inferInService(blip, { currentStage }) {
     backfillDelivery: missedHandover,
     why: missedHandover
       ? `operating as ${cs}; handover happened before this system saw it, ` +
-        `so DELIVERY is backfilled with an unknown date`
+        `delivery date remains unknown`
       : `operating as ${cs}`,
   };
 }
@@ -152,3 +152,4 @@ export function inferAll({ blip, place, sortie, ctx }) {
 
 export const typeOf = (blip) => FLEET_TYPES[blip.t] ?? null;
 export const siteName = (icao) => SITES[icao]?.name ?? icao;
+
