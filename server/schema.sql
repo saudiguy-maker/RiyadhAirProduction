@@ -185,3 +185,17 @@ ALTER TABLE order_snapshot ADD COLUMN IF NOT EXISTS content_hash TEXT;
 
 ALTER TABLE stage_event ADD COLUMN IF NOT EXISTS observation_key TEXT;
 CREATE UNIQUE INDEX IF NOT EXISTS stage_event_observation_once ON stage_event (observation_key) WHERE observation_key IS NOT NULL;
+
+-- Source versions and claims never rewrite operational stage history.
+CREATE TABLE IF NOT EXISTS manufacturer_report (
+  id TEXT PRIMARY KEY, manufacturer TEXT NOT NULL, as_of DATE,
+  captured_on DATE NOT NULL, payload JSONB NOT NULL,
+  imported_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS research_poll (
+  source TEXT PRIMARY KEY, last_checked TIMESTAMPTZ, last_ok TIMESTAMPTZ, error TEXT
+);
+CREATE TABLE IF NOT EXISTS aircraft_evidence (
+  id TEXT PRIMARY KEY, content_hash TEXT NOT NULL, payload JSONB NOT NULL,
+  imported_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

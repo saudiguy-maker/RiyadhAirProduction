@@ -65,7 +65,72 @@ program key. `npm run migrate` imports the bundled records without reseeding.
 Use [Airbus monthly orders and deliveries](https://www.airbus.com/en/products-services/commercial-aircraft/orders-and-deliveries),
 Boeing announcements and airline releases for reconciliation. A press release
 is an order-date source, not proof of today's outstanding balance. There is
-no automatic document scraper that silently overwrites quantities.
+no automatic document scraper that silently overwrites announcement quantities.
+
+## Manufacturer reports and production evidence
+
+The application checks the official Airbus monthly XLSX and the Boeing public
+Tableau CSV once per day and on startup. `REPORT_REFRESH=off` disables these
+checks. The last validated versions remain available after network errors or
+layout changes. `/api/research` exposes reports, attributed aircraft evidence
+and source-check health. Additive startup migrations preserve existing records.
+
+Airbus imports validate the Middle East customer rows, merged column headers,
+report date and each customer's type totals against the workbook total. Blank
+numeric cells are zero entries in that report. They do not prove an airline has
+no orders placed by its group or a lessor. Boeing exports repeat facts for each
+measure: only `Order Total` rows are aggregated. The export does not supply its
+reporting cutoff, so retrieval date is explicitly separate. Manufacturer
+customer totals are never added to announcements or fleet/lease counts.
+
+Each changed manufacturer report is retained in `manufacturer_report`, keyed
+by content hash. An identical retrieval does not create another version. Older
+Airbus reporting periods cannot replace newer ones. Changed content for the
+same reporting period remains a separate revision. To save a fresh validated
+bundle locally: `npm run reports:export -- reviewed-reports.json`. Review the
+output before replacing `data/manufacturer-reports.json` in the repository.
+
+`data/evidence.json` contains selected, source-checked enthusiast reports, not
+manufacturer-confirmed milestones. Evidence never updates `airframe` or
+`stage_event`. Records match by manufacturer plus MSN where both have an MSN,
+otherwise registration and operator; mismatches remain unbound. Date or serial
+number conflicts are shown for review. The original observation group is
+explicit, so reposts do not increase independent-source counts. Corrections
+require a new ID with `supersedes`; the original record remains stored.
+
+Anyone can use **Submit a sighting** to open the GitHub evidence issue form.
+The issue is a review queue, not an automatic publication endpoint. Review the
+original source, date, identity, independence and permitted reuse, then add a
+record to `data/evidence.json` through the normal code review process. Link
+photographs using `sources[].photo_url`; the application does not copy photos.
+Use a direct source URL and a stable `origin_id` for each underlying sighting.
+See the bundled records for the complete JSON format.
+
+Validate an evidence file without writing to the database:
+`npm run evidence:import -- reviewed-evidence.json --check`.
+Without `--check`, the CLI imports it transactionally into `DATABASE_URL`.
+Statuses are `reported`, `inferred`, `corroborated`, `confirmed`, or `disputed`.
+Confirmed claims require primary manufacturer/airline/lessor evidence.
+Corroborated claims require independent origins; stronger statuses also need a
+`review_note`. A flight sighting alone is `TEST`, not `FIRST` or `CUSTOMER`.
+Missing milestones stay unknown; assembly is not inferred from a later flight.
+
+### Commercial and additional enthusiast sources
+
+The source directory includes Planespotters reference links, ch-aviation,
+Cirium and Flightradar24. No paid account is connected and no subscription is
+purchased. The importer accepts reviewed exports normalized to the same
+evidence schema; it is not a provider API adapter. Map a licensed sample before
+using it: preserve provider identity, original dates, MSN, registration and the
+actual/confirmed/estimated distinction. Keep estimated dates out of observed
+milestones and use them only in explanatory notes. Commercial fleet evidence
+requires `--licensed-for-public-display`; a standard internal-use subscription
+does not establish redistribution rights. Do not commit source exports or keys.
+Provider-specific automatic adapters remain pending licensed samples and access.
+
+Planespotters and other enthusiast sites are references for reviewed records,
+not bulk scrapers. The selected B787 Register records retain links and independent
+source labels. Review new sites' access and reuse terms before enabling ingestion.
 
 ## Flight sources and reliability
 
@@ -90,6 +155,7 @@ Reconnecting clients fetch a fresh snapshot, including newly identified aircraft
 
 ```
 GET /api/orders
+GET /api/research
 GET /api/roster
 GET /api/events?limit=60
 GET /api/airframe/:id

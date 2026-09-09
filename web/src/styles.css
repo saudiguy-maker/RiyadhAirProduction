@@ -167,3 +167,23 @@ h1 { font-size: 34px; font-weight: 700; text-transform: uppercase; line-height: 
 .orderbook small { display: block; color: #bcb0cf; margin-top: 5px; }
 .orderbook a { color: #bba1ff; display: block; }
 .orderbook details { min-width: 180px; max-width: 420px; margin-top: 8px; }
+
+.research h3 { font-size: 16px; margin: 20px 0 10px; }
+.research label { display: block; color: #c7bdd5; margin: 14px 0; font-size: 14px; }
+.research input { margin-right: 8px; accent-color: #b99aff; }
+.research summary { cursor: pointer; color: #e6d6ff; }
+.research-warning { color: #f4cd85 !important; }
+.manufacturer-block { border-top: 1px solid #493460; margin-top: 20px; }
+.evidence-list { display: grid; gap: 12px; margin-top: 16px; }
+.evidence-card { padding: 16px; border: 1px solid #493460; border-radius: 10px; background: #21132f; }
+.evidence-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.evidence-card p { font-size: 14px; line-height: 1.5; color: #c7bdd5; }
+.evidence-card small { color: #c7bdd5; display: block; margin-top: 10px; }
+.evidence-status { font-size: 12px; border-radius: 5px; padding: 5px 8px; background: #3b2954; text-transform: capitalize; }
+.evidence-status.disputed { color: #f4cd85; }
+.evidence-status.confirmed, .evidence-status.corroborated { color: #85e8b6; }
+.evidence-links { display: flex; gap: 14px; flex-wrap: wrap; }
+.evidence-links a { display: inline; color: #c3a6ff; }
+.source-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,260px),1fr)); gap: 20px; }
+.source-grid article { border-top: 1px solid #493460; }
+.sheetin { max-height: 90vh; overflow-y: auto; }

@@ -7,6 +7,9 @@ import { createPool, createDb, migrate } from "./db.js";
 import { createWorker } from "../ingest/worker.js";
 
 import { importSnapshots, bundledSnapshots, orderBook } from "./orders.js";
+import fs from 'node:fs';
+import { importEvidence, bundledEvidence, evidenceBook } from './evidence.js';
+import { importBundledReports, reports, refreshManufacturers } from './manufacturer-reports.js';
 
 const __dir = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT ?? 8080);
@@ -14,6 +17,8 @@ const PORT = Number(process.env.PORT ?? 8080);
 const pool = createPool();
 await migrate(pool);
 await importSnapshots(pool, bundledSnapshots());
+await importEvidence(pool, bundledEvidence());
+await importBundledReports(pool);
 const db = createDb(pool);
 const app = express();
 const server = http.createServer(app);
@@ -51,6 +56,16 @@ wss.on("connection", (ws) => { ws.isAlive = true; ws.on("pong", () => { ws.isAli
 
 app.use(express.json());
 
+app.get('/api/research', async (_req,res) => {
+  try {
+    const [manufacturer_reports,evidence,{rows:polls}]=await Promise.all([
+      reports(pool),evidenceBook(pool),pool.query('SELECT * FROM research_poll')]);
+    const sources=JSON.parse(fs.readFileSync(new URL('../data/sources.json',import.meta.url),'utf8'));
+    res.json({manufacturer_reports,evidence,sources:sources.map(s=>({...s,poll:polls.find(p=>p.source===s.id)??null})),
+      refresh_enabled:process.env.REPORT_REFRESH!=='off'});
+  } catch(e) {res.status(500).json({error:'Research data unavailable'});console.error('[research]',e.message);}
+});
+
 app.get("/api/orders", async (_req, res) => {
   try { res.json(await orderBook(pool)); }
   catch (e) { res.status(500).json({ error: e.message }); }
@@ -71,7 +86,7 @@ app.get("/api/airframe/:id", async (req, res) => {
     const all = await db.roster();
     const frame = all.find((f) => f.id === req.params.id);
     if (!frame) return res.status(404).json({ error: "No airframe with that id." });
-    res.json({ ...frame, history: await db.history(frame.id) });
+    res.json({ ...frame, history: await db.history(frame.id), evidence: (await evidenceBook(pool)).filter(r=>r.airframe_id===frame.id && !r.superseded) });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -173,9 +188,25 @@ server.listen(PORT, "0.0.0.0", () => {
   console.log(`ingest: ${process.env.INGEST === "off" ? "disabled" : "running"}`);
 });
 
+// Daily source checks fetch monthly reports. A failed or changed layout leaves
+// the last valid report available and exposes the error in the source directory.
+let reportBusy=false;
+const refreshReports=async()=>{
+  if(reportBusy) return;
+  reportBusy=true;
+  try {await refreshManufacturers(pool);} catch(e){console.error('[reports]',e.message);} finally{reportBusy=false;}
+};
+let reportTimer;
+if(process.env.REPORT_REFRESH!=='off') {
+  refreshReports();
+  reportTimer=setInterval(refreshReports,24*60*60*1000);
+  reportTimer.unref();
+}
+
 const shutdown = async () => {
   console.log("\nshutting down");
   worker?.stop();
+  clearInterval(reportTimer);
   for (const ws of clients) ws.close();
   server.close();
   await pool.end();
