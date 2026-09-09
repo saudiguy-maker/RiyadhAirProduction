@@ -9,7 +9,7 @@ createRoot(document.getElementById("root")).render(<App />);
 // requirement, not a choice — see the README on installing to the home screen.
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {
+    navigator.serviceWorker.register("/sw.js", {updateViaCache:'none'}).catch(() => {
       /* offline shell unavailable; the app still works online */
     });
   });

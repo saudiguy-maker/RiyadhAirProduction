@@ -133,9 +133,14 @@ app.get("/api/health", async (_req, res) => {
 
 /* ---------- static PWA ---------- */
 
-app.use(express.static(path.join(__dir, "..", "web", "dist"), { maxAge: "1h" }));
+app.use(express.static(path.join(__dir, "..", "web", "dist"), {
+  maxAge: '1h',
+  setHeaders(res,file) {
+    if(file.endsWith('index.html') || file.endsWith('sw.js') || file.endsWith('.webmanifest')) res.setHeader('Cache-Control','no-cache, must-revalidate');
+  }
+}));
 app.get(/.*/, (_req, res) =>
-  res.sendFile(path.join(__dir, "..", "web", "dist", "index.html")));
+  res.set('Cache-Control','no-cache, must-revalidate').sendFile(path.join(__dir, "..", "web", "dist", "index.html")));
 
 /* ---------- ingestion ---------- */
 
