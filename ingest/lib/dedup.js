@@ -78,12 +78,18 @@ export class Dedup {
   }
 
   /** Close only after sustained ground time — a touch-and-go is not a landing. */
-  async closeSortie(hex, ts, groundHoldMs = 10 * 60 * 1000) {
+  async closeSortie(hex, ts, groundHoldMs = 10 * 60 * 1000, arrived = null) {
     const raw = await this.r.get(KEY.sortie(hex));
     if (!raw) return null;
     const s = JSON.parse(raw);
-    if (ts - s.lastSeen < groundHoldMs) return null;
+    if (ts < s.lastSeen) return null;
+    if (!s.groundSince || (arrived && s.arrived !== arrived)) {
+      await this.r.set(KEY.sortie(hex), JSON.stringify({ ...s, groundSince: ts, arrived: arrived ?? s.arrived }), "EX", 86400);
+      return null;
+    }
+    if (ts - s.groundSince < groundHoldMs) return null;
     await this.r.del(KEY.sortie(hex));
     return { ...s, endedAt: ts };
   }
 }
+

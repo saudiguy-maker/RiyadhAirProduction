@@ -153,3 +153,35 @@ CREATE INDEX IF NOT EXISTS airframe_operator_idx ON airframe (operator, current_
 CREATE INDEX IF NOT EXISTS airframe_slot_idx
   ON airframe (operator, icao_type, identity_source)
   WHERE registration IS NULL;
+
+
+
+-- Order evidence is independent of aircraft identities and legacy placeholders.
+ALTER TABLE airframe ADD COLUMN IF NOT EXISTS tracking_kind TEXT NOT NULL DEFAULT 'order';
+UPDATE airframe SET tracking_kind = 'lease' WHERE id LIKE 'leased-%';
+CREATE TABLE IF NOT EXISTS order_snapshot (
+  id TEXT PRIMARY KEY,
+  program_key TEXT NOT NULL,
+  operator TEXT NOT NULL,
+  type_code TEXT NOT NULL,
+  as_of DATE NOT NULL,
+  firm_total INTEGER CHECK (firm_total >= 0),
+  delivered_total INTEGER CHECK (delivered_total >= 0),
+  options_total INTEGER CHECK (options_total >= 0),
+  pending_total INTEGER CHECK (pending_total >= 0),
+  scope TEXT NOT NULL,
+  note TEXT NOT NULL,
+  sources JSONB NOT NULL CHECK (jsonb_typeof(sources) = 'array' AND jsonb_array_length(sources) > 0),
+  checked_on DATE NOT NULL,
+  imported_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CHECK (delivered_total IS NULL OR (firm_total IS NOT NULL AND delivered_total <= firm_total)),
+  UNIQUE (program_key, as_of)
+);
+CREATE INDEX IF NOT EXISTS order_snapshot_latest ON order_snapshot (program_key, as_of DESC);
+CREATE INDEX IF NOT EXISTS candidate_pending_idx ON candidate (last_seen DESC) WHERE resolved = false;
+CREATE INDEX IF NOT EXISTS position_fix_time_idx ON position_fix (ts);
+
+ALTER TABLE order_snapshot ADD COLUMN IF NOT EXISTS content_hash TEXT;
+
+ALTER TABLE stage_event ADD COLUMN IF NOT EXISTS observation_key TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS stage_event_observation_once ON stage_event (observation_key) WHERE observation_key IS NOT NULL;

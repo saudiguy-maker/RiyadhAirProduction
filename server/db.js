@@ -14,14 +14,14 @@ export function createDb(pool) {
   return {
     async getAirframeByHex(hex) {
       const { rows } = await pool.query(
-        `SELECT id, current_stage, type_code, manufacturer, registration
+        `SELECT id, operator, icao_type, current_stage, type_code, manufacturer, registration
            FROM airframe WHERE icao_hex = $1`, [hex]);
       return rows[0] ?? null;
     },
 
     async getAirframeByReg(reg) {
       const { rows } = await pool.query(
-        `SELECT id, current_stage, type_code, manufacturer, registration
+        `SELECT id, operator, icao_type, current_stage, type_code, manufacturer, registration
            FROM airframe WHERE registration = $1`, [reg]);
       return rows[0] ?? null;
     },
@@ -162,13 +162,36 @@ export function createDb(pool) {
       // ON CONFLICT DO NOTHING is the permanent twin of the Redis guard.
       const { rows } = await pool.query(
         `INSERT INTO stage_event
-           (airframe_id, stage, occurred_at, source, site_icao, confidence, provisional, raw_ref)
-         VALUES ($1,$2,to_timestamp($3/1000.0),$4,$5,$6,$7,$8)
+           (airframe_id, stage, occurred_at, source, site_icao, confidence, provisional, raw_ref, observation_key)
+         VALUES ($1,$2,to_timestamp($3/1000.0),$4,$5,$6,$7,$8,$9)
          ON CONFLICT DO NOTHING
          RETURNING id`,
         [e.airframe_id, e.stage, e.occurred_at, e.source, e.site_icao,
-         e.confidence, e.provisional ?? false, e.raw_ref]);
+         e.confidence, e.provisional ?? false, e.raw_ref,
+         e.provisional ? `${e.airframe_id}:${e.stage}:${Math.floor(e.occurred_at / 3600000)}` : null]);
       return rows[0]?.id ?? null;
+    },
+
+    async advanceStage(e) {
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN");
+        const { rows } = await client.query(
+          "SELECT current_stage FROM airframe WHERE id = $1 FOR UPDATE", [e.airframe_id]);
+        const stages = ["ORDERED","SLOT","ASSEMBLY","ROLLOUT","GROUND","FIRST","PAINT","CUSTOMER","DELIVERY","SERVICE"];
+        const next = stages.indexOf(e.stage);
+        if (!rows[0] || next < 0 || next <= stages.indexOf(rows[0].current_stage)) {
+          await client.query("ROLLBACK");
+          return null;
+        }
+        const eventId = await createDb(client).insertStageEvent(e);
+        if (!eventId) { await client.query("ROLLBACK"); return null; }
+        await client.query("UPDATE airframe SET current_stage = $2, updated_at = now() WHERE id = $1",
+          [e.airframe_id, e.stage]);
+        await client.query("COMMIT");
+        return eventId;
+      } catch (e) { await client.query("ROLLBACK"); throw e; }
+      finally { client.release(); }
     },
 
     async setStage(airframeId, stage) {
@@ -180,18 +203,30 @@ export function createDb(pool) {
     async recordFix(airframeId, blip) {
       await pool.query(
         `INSERT INTO position_fix (ts, airframe_id, lat, lon, alt_baro, gs, track)
-         VALUES (to_timestamp($1/1000.0),$2,$3,$4,$5,$6,$7)`,
+         SELECT to_timestamp($1/1000.0),$2,$3,$4,$5,$6,$7
+          WHERE NOT EXISTS (SELECT 1 FROM position_fix WHERE airframe_id = $2
+            AND ts >= to_timestamp($1/1000.0) - interval '30 seconds')`,
         [blip.ts, airframeId, blip.lat, blip.lon,
          Number.isFinite(+blip.alt_baro) ? +blip.alt_baro : null, blip.gs, blip.track]);
     },
 
     /* ---- read side, used by the API ---- */
 
+    async recordSourcePoll(source, h) {
+      await pool.query(`INSERT INTO source_poll (source, last_ok_at, last_error, error_count, last_count)
+        VALUES ($1, CASE WHEN $2 THEN to_timestamp($3/1000.0) ELSE NULL END, $4, CASE WHEN $2 THEN 0 ELSE 1 END, $5)
+        ON CONFLICT (source) DO UPDATE SET
+          last_ok_at = COALESCE(EXCLUDED.last_ok_at, source_poll.last_ok_at),
+          last_error = EXCLUDED.last_error,
+          error_count = CASE WHEN $2 THEN 0 ELSE source_poll.error_count + 1 END,
+          last_count = EXCLUDED.last_count`, [source, h.ok, h.at, h.err ?? null, h.count ?? null]);
+    },
+
     async roster() {
       const { rows } = await pool.query(
         `SELECT id, operator, manufacturer, type_code, msn, line_number, registration,
                 test_registration, icao_hex, current_stage, identity_source,
-                order_line_id, updated_at
+                order_line_id, tracking_kind, updated_at
            FROM airframe
           ORDER BY CASE current_stage
                      WHEN 'SERVICE' THEN 0 WHEN 'DELIVERY' THEN 1
@@ -242,3 +277,4 @@ export async function migrate(pool) {
   await pool.query(sql);
   console.log("schema applied");
 }
+

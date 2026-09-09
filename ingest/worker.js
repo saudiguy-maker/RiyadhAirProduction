@@ -29,7 +29,7 @@ export class IngestWorker extends EventEmitter {
   start() {
     this.running = true;
     this.loop();
-    this.sweeper = setInterval(() => this.sweepClosedSorties(), 60_000);
+    this.sweeper = setInterval(() => this.sweepClosedSorties().catch((e) => this.emit("error", e)), 60_000);
   }
 
   stop() {
@@ -55,13 +55,18 @@ export class IngestWorker extends EventEmitter {
     this.ticks++;
     for (const icao of sweep) {
       const s = SITES[icao];
+      try {
       const blips = await this.pool.near(
         s.circle.lat,
         s.circle.lon,
         s.circle.radius_km * KM_TO_NM,
       );
-      for (const blip of blips) await this.handle(blip);
+      for (const blip of blips) {
+        try { await this.handle(blip); } catch (e) { this.emit("error", e); }
+      }
+      } catch (e) { this.emit("error", e); }
     }
+    for (const [source, h] of this.pool.health) await this.db.recordSourcePoll?.(source, h);
     this.emit("tick", { at: Date.now(), swept: sweep.length, health: Object.fromEntries(this.pool.health) });
   }
 
@@ -93,13 +98,13 @@ export class IngestWorker extends EventEmitter {
       await this.dedup.openSortie(blip.hex, { departed: place.icao, ts: blip.ts });
       await this.dedup.touchSortie(blip.hex, { callsign: blip.flight });
       await this.dedup.touchSortie(blip.hex, {
-        lastSeen: blip.ts,
+        lastSeen: blip.ts, groundSince: null,
         maxAlt: Math.max(0, Number(blip.alt_baro) || 0),
         arrived: place.icao,
       });
       await this.consider({ blip, place, sortie: null, airframe, neverSeenBefore: isNew, airborne: true });
     } else {
-      closedSortie = await this.dedup.closeSortie(blip.hex, blip.ts);
+      closedSortie = await this.dedup.closeSortie(blip.hex, blip.ts, 10 * 60_000, place.icao);
       await this.consider({ blip, place, sortie: closedSortie, airframe, neverSeenBefore: false, airborne: false });
     }
   }
@@ -222,7 +227,7 @@ export class IngestWorker extends EventEmitter {
     if (!hit) return;
 
     if (hit.confidence < 0.8) {
-      await this.db.insertStageEvent({
+      const provisionalId = await this.db.insertStageEvent({
         airframe_id: airframe.id,
         stage: hit.stage,
         occurred_at: blip.ts,
@@ -230,16 +235,15 @@ export class IngestWorker extends EventEmitter {
         site_icao: place.icao,
         confidence: hit.confidence,
         provisional: true,
-        raw_ref: hit.why,
+        raw_ref: JSON.stringify({ why: hit.why, provider: blip.provider ?? null }),
       });
-      this.emit("provisional", { airframe, ...hit });
+      if (provisionalId) this.emit("provisional", { airframe, ...hit });
       return;
     }
 
-    const won = await this.dedup.claim(airframe.id, hit.stage, blip.ts);
-    if (!won) return;
-
-    await this.db.insertStageEvent({
+    // Postgres owns the stage and event in one transaction. Redis must not
+    // consume a milestone before a failed database write can be retried.
+    const eventId = await this.db.advanceStage({
       airframe_id: airframe.id,
       stage: hit.stage,
       occurred_at: blip.ts,
@@ -247,9 +251,9 @@ export class IngestWorker extends EventEmitter {
       site_icao: place.icao,
       confidence: hit.confidence,
       provisional: false,
-      raw_ref: hit.why,
+      raw_ref: JSON.stringify({ why: hit.why, provider: blip.provider ?? null }),
     });
-    await this.db.setStage(airframe.id, hit.stage);
+    if (!eventId) return;
 
     this.emit("milestone", {
       airframe_id: airframe.id,
@@ -259,6 +263,7 @@ export class IngestWorker extends EventEmitter {
       registration: blip.reg,
       hex: blip.hex,
       type: FLEET_TYPES[blip.t]?.type,
+      manufacturer: airframe.manufacturer,
       stage: hit.stage,
       site: siteName(place.icao),
       at: blip.ts,
@@ -274,7 +279,7 @@ export class IngestWorker extends EventEmitter {
       const raw = await this.r.get(k);
       if (!raw) continue;
       const s = JSON.parse(raw);
-      if (Date.now() - s.lastSeen < 45 * 60_000) continue;
+      if (Date.now() - s.startedAt < 24 * 60 * 60_000) continue;
       await this.r.del(k);
       this.emit("sortie-expired", s);
     }
@@ -324,3 +329,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   w.start();
   console.log(`watching ${POLLED_SITES.join(" ")} every ${TICK_MS}ms`);
 }
+

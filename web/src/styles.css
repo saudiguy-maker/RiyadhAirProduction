@@ -157,3 +157,13 @@ h1 { font-size: 34px; font-weight: 700; text-transform: uppercase; line-height: 
 .op.on .opn { font-weight: 600; }
 .opdot { display: inline-block; width: 6px; height: 6px; border-radius: 50%;
          margin-right: 6px; vertical-align: middle; }
+
+
+.orderbook { margin: 24px 0; padding: 20px; border: 1px solid #493460; border-radius: 14px; }
+.orderbook p { color: #bcb0cf; font-size: 14px; line-height: 1.5; }
+.table-scroll { overflow-x: auto; }
+.orderbook table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.orderbook td, .orderbook th { text-align: left; padding: 12px 10px; border-bottom: 1px solid #493460; vertical-align: top; }
+.orderbook small { display: block; color: #bcb0cf; margin-top: 5px; }
+.orderbook a { color: #bba1ff; display: block; }
+.orderbook details { min-width: 180px; max-width: 420px; margin-top: 8px; }

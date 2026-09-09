@@ -1,0 +1,142 @@
+[
+  {
+    "id": "rxi-787-2026-07-20",
+    "program_key": "rxi-787",
+    "operator": "RXI",
+    "type_code": "787 family",
+    "as_of": "2026-07-20",
+    "firm_total": 50,
+    "delivered_total": 6,
+    "options_total": null,
+    "pending_total": 17,
+    "scope": "Program total",
+    "note": "Boeing reports 67 only after 17 are finalized: 50 firm is derived as 67 minus 17. Six deliveries as of this source date. Firm variant split and current remaining balance are not established.",
+    "sources": [
+      {
+        "url": "https://investors.boeing.com/investors/news/press-release-details/2026/Riyadh-Air-Commits-to-Purchase-28-Boeing-787-Dreamliners-Adds-787-10-to-Future-Fleet/default.aspx",
+        "publisher": "Boeing"
+      }
+    ],
+    "checked_on": "2026-09-09"
+  },
+  {
+    "id": "rxi-a350-2026-07-20",
+    "program_key": "rxi-a350",
+    "operator": "RXI",
+    "type_code": "A350-1000",
+    "as_of": "2026-07-20",
+    "firm_total": 31,
+    "delivered_total": null,
+    "options_total": null,
+    "pending_total": null,
+    "scope": "Program total",
+    "note": "31 firm within a potential commitment of 50. The remaining 19 are not counted as firm. This release does not establish current deliveries.",
+    "sources": [
+      {
+        "url": "https://www.airbus.com/en/newsroom/press-releases/2026-07-riyadh-air-firms-up-order-for-six-additional-airbus-a350-1000-aircraft",
+        "publisher": "Airbus"
+      }
+    ],
+    "checked_on": "2026-09-09"
+  },
+  {
+    "id": "rxi-a321-2024-10-30",
+    "program_key": "rxi-a321",
+    "operator": "RXI",
+    "type_code": "A321neo family",
+    "as_of": "2024-10-30",
+    "firm_total": 60,
+    "delivered_total": null,
+    "options_total": null,
+    "pending_total": null,
+    "scope": "Announced order",
+    "note": "Correct announcement date: 30 October 2024. No XLR split or current delivery balance established by this release.",
+    "sources": [
+      {
+        "url": "https://www.aircraft.airbus.com/en/newsroom/press-releases/2024-10-riyadh-air-places-firm-order-for-60-airbus-a321neo-family-aircraft",
+        "publisher": "Airbus"
+      }
+    ],
+    "checked_on": "2026-09-09"
+  },
+  {
+    "id": "sva-787-2023-2023-03-14",
+    "program_key": "sva-787-2023",
+    "operator": "SVA",
+    "type_code": "787-9 / 787-10",
+    "as_of": "2023-03-14",
+    "firm_total": 39,
+    "delivered_total": null,
+    "options_total": 10,
+    "pending_total": null,
+    "scope": "2023 order only",
+    "note": "39 firm plus 10 options. This is the 2023 contract, not the carrier\u2019s complete lifetime order book or current backlog.",
+    "sources": [
+      {
+        "url": "https://investors.boeing.com/investors/news/press-release-details/2023/SAUDIA-to-Grow-Long-Haul-Fleet-with-up-to-49-Boeing-787-Dreamliners/default.aspx",
+        "publisher": "Boeing"
+      }
+    ],
+    "checked_on": "2026-09-09"
+  },
+  {
+    "id": "sv-group-a320-2024-2024-05-20",
+    "program_key": "sv-group-a320-2024",
+    "operator": "SVA_GROUP",
+    "type_code": "A320neo family",
+    "as_of": "2024-05-20",
+    "firm_total": 105,
+    "delivered_total": null,
+    "options_total": null,
+    "pending_total": null,
+    "scope": "Saudia + flyadeal group order",
+    "note": "Group-level source; do not add this to an operator-level allocation of the same contract. Remaining deliveries and carrier allocation require reconciliation.",
+    "sources": [
+      {
+        "url": "https://www.aircraft.airbus.com/en/newsroom/press-releases/2024-05-saudia-group-orders-105-a320neo-family-aircraft-to-support-countrys",
+        "publisher": "Airbus"
+      }
+    ],
+    "checked_on": "2026-09-09"
+  },
+  {
+    "id": "nas-airbus-2026-07-22",
+    "program_key": "nas-airbus",
+    "operator": "NAS",
+    "type_code": "Airbus total",
+    "as_of": "2026-07-22",
+    "firm_total": 235,
+    "delivered_total": null,
+    "options_total": null,
+    "pending_total": null,
+    "scope": "Program total",
+    "note": "Includes 56 A321neo and 20 A330neo commitments. Operating fleet size is not cumulative deliveries; current backlog is unknown. Type components are not separate additive rows.",
+    "sources": [
+      {
+        "url": "https://www.airbus.com/en/newsroom/press-releases/2026-07-flynas-firms-up-additional-airbus-a330-900-and-a321neo-aircraft",
+        "publisher": "Airbus"
+      }
+    ],
+    "checked_on": "2026-09-09"
+  },
+  {
+    "id": "fad-a330-2025-04-23",
+    "program_key": "fad-a330",
+    "operator": "FAD",
+    "type_code": "A330-900",
+    "as_of": "2025-04-23",
+    "firm_total": 10,
+    "delivered_total": null,
+    "options_total": null,
+    "pending_total": null,
+    "scope": "Announced order",
+    "note": "10 A330-900 ordered for flyadeal. Current delivery balance not established.",
+    "sources": [
+      {
+        "url": "https://www.aircraft.airbus.com/en/newsroom/press-release/2025-04-saudia-group-discloses-order-for-10-airbus-a330neo-aircraft-for",
+        "publisher": "Airbus"
+      }
+    ],
+    "checked_on": "2026-09-09"
+  }
+]
