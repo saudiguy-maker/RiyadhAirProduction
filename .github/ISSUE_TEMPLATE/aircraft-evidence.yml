@@ -1,0 +1,50 @@
+name: Aircraft sighting or production record
+description: Submit evidence for review. Submission does not confirm a manufacturing stage.
+title: "[Evidence] "
+body:
+  - type: input
+    id: identity
+    attributes:
+      label: Aircraft identity
+      description: Manufacturer, serial number if known, registration and airline.
+    validations:
+      required: true
+  - type: input
+    id: observed
+    attributes:
+      label: Observation date
+      description: Date the event happened, rather than the date a post was shared.
+      placeholder: YYYY-MM-DD
+    validations:
+      required: true
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: Reported milestone
+      options:
+        - Slot assignment
+        - Assembly
+        - Rollout
+        - Seen in airline livery
+        - Ground activity
+        - Flight observed
+        - First flight reported
+        - Customer acceptance flight reported
+        - Delivery reported
+        - Entry into service reported
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Original evidence links
+      description: Link the original report or photograph, name its author and explain whether other links repeat the same observation. Do not upload photos you do not have permission to reuse.
+    validations:
+      required: true
+  - type: textarea
+    id: explanation
+    attributes:
+      label: What does the evidence establish?
+      description: Describe the observation, uncertainty and any conflicting records. A flight sighting alone does not prove first flight or acceptance.
+    validations:
+      required: true

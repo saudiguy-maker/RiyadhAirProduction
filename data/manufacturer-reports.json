@@ -1,0 +1,299 @@
+[
+  {
+    "manufacturer": "AIRBUS",
+    "as_of": "2026-08-31",
+    "captured_on": "2026-09-09",
+    "url": "https://mediaassets.airbus.com/pm_38_926_926418-8o4vw9qg0u.xlsx?fileName=orders-and-deliveries-august-2026.xlsx",
+    "rows": [
+      {
+        "customer": "FLYADEAL",
+        "operator": "FAD",
+        "type_code": "A320ceo",
+        "ordered": 0,
+        "delivered": 0,
+        "in_fleet": 11,
+        "locator": "Middle East!V31:X31"
+      },
+      {
+        "customer": "FLYADEAL",
+        "operator": "FAD",
+        "type_code": "A320neo",
+        "ordered": 0,
+        "delivered": 0,
+        "in_fleet": 36,
+        "locator": "Middle East!Y31:AA31"
+      },
+      {
+        "customer": "FLYNAS",
+        "operator": "NAS",
+        "type_code": "A320ceo",
+        "ordered": 0,
+        "delivered": 0,
+        "in_fleet": 3,
+        "locator": "Middle East!V32:X32"
+      },
+      {
+        "customer": "FLYNAS",
+        "operator": "NAS",
+        "type_code": "A320neo",
+        "ordered": 160,
+        "delivered": 62,
+        "in_fleet": 62,
+        "locator": "Middle East!Y32:AA32"
+      },
+      {
+        "customer": "FLYNAS",
+        "operator": "NAS",
+        "type_code": "A321neo",
+        "ordered": 56,
+        "delivered": 0,
+        "in_fleet": 0,
+        "locator": "Middle East!AE32:AG32"
+      },
+      {
+        "customer": "FLYNAS",
+        "operator": "NAS",
+        "type_code": "A330-300",
+        "ordered": 0,
+        "delivered": 0,
+        "in_fleet": 2,
+        "locator": "Middle East!AV32:AX32"
+      },
+      {
+        "customer": "FLYNAS",
+        "operator": "NAS",
+        "type_code": "A330-900",
+        "ordered": 20,
+        "delivered": 0,
+        "in_fleet": 0,
+        "locator": "Middle East!BB32:BD32"
+      },
+      {
+        "customer": "RIYADH AIR",
+        "operator": "RXI",
+        "type_code": "A321neo",
+        "ordered": 60,
+        "delivered": 0,
+        "in_fleet": 0,
+        "locator": "Middle East!AE51:AG51"
+      },
+      {
+        "customer": "RIYADH AIR",
+        "operator": "RXI",
+        "type_code": "A350-1000",
+        "ordered": 31,
+        "delivered": 0,
+        "in_fleet": 0,
+        "locator": "Middle East!BS51:BU51"
+      },
+      {
+        "customer": "SAUDIA",
+        "operator": "SVA",
+        "type_code": "A320ceo",
+        "ordered": 7,
+        "delivered": 7,
+        "in_fleet": 37,
+        "locator": "Middle East!V54:X54"
+      },
+      {
+        "customer": "SAUDIA",
+        "operator": "SVA",
+        "type_code": "A320neo",
+        "ordered": 42,
+        "delivered": 30,
+        "in_fleet": 0,
+        "locator": "Middle East!Y54:AA54"
+      },
+      {
+        "customer": "SAUDIA",
+        "operator": "SVA",
+        "type_code": "A321ceo",
+        "ordered": 15,
+        "delivered": 15,
+        "in_fleet": 15,
+        "locator": "Middle East!AB54:AD54"
+      },
+      {
+        "customer": "SAUDIA",
+        "operator": "SVA",
+        "type_code": "A321neo",
+        "ordered": 128,
+        "delivered": 16,
+        "in_fleet": 16,
+        "locator": "Middle East!AE54:AG54"
+      },
+      {
+        "customer": "SAUDIA",
+        "operator": "SVA",
+        "type_code": "A300",
+        "ordered": 11,
+        "delivered": 11,
+        "in_fleet": 0,
+        "locator": "Middle East!AI54:AK54"
+      },
+      {
+        "customer": "SAUDIA",
+        "operator": "SVA",
+        "type_code": "A330-300",
+        "ordered": 12,
+        "delivered": 12,
+        "in_fleet": 31,
+        "locator": "Middle East!AV54:AX54"
+      },
+      {
+        "customer": "SAUDIA",
+        "operator": "SVA",
+        "type_code": "A330-900",
+        "ordered": 10,
+        "delivered": 0,
+        "in_fleet": 0,
+        "locator": "Middle East!BB54:BD54"
+      }
+    ],
+    "note": "Cumulative customer accounting, including historic types. Blank numeric cells are zero entries in this report, not evidence that an operator has no group or leased commitments. In-fleet aircraft include other sources and are not deliveries. Saudia customer allocations must not be added to the separate Saudia Group announcement."
+  },
+  {
+    "manufacturer": "BOEING",
+    "as_of": null,
+    "captured_on": "2026-09-09",
+    "url": "https://public.tableau.com/views/BoeingCommercialOrdersDeliveries_16788064876590/OrdersandDeliveries.csv?:showVizHome=no",
+    "rows": [
+      {
+        "customer": "Riyadh Air",
+        "operator": "RXI",
+        "type_code": "787-9",
+        "ordered": 39,
+        "delivered": 7,
+        "in_fleet": null,
+        "locator": "Order Total measure, grouped by Customer Name and Model Series"
+      },
+      {
+        "customer": "Saudia",
+        "operator": "SVA",
+        "type_code": "DC-9",
+        "ordered": 3,
+        "delivered": 3,
+        "in_fleet": null,
+        "locator": "Order Total measure, grouped by Customer Name and Model Series"
+      },
+      {
+        "customer": "Saudia",
+        "operator": "SVA",
+        "type_code": "737-200",
+        "ordered": 20,
+        "delivered": 20,
+        "in_fleet": null,
+        "locator": "Order Total measure, grouped by Customer Name and Model Series"
+      },
+      {
+        "customer": "Saudia",
+        "operator": "SVA",
+        "type_code": "707/720",
+        "ordered": 9,
+        "delivered": 9,
+        "in_fleet": null,
+        "locator": "Order Total measure, grouped by Customer Name and Model Series"
+      },
+      {
+        "customer": "Saudia",
+        "operator": "SVA",
+        "type_code": "747-200",
+        "ordered": 1,
+        "delivered": 1,
+        "in_fleet": null,
+        "locator": "Order Total measure, grouped by Customer Name and Model Series"
+      },
+      {
+        "customer": "Saudia",
+        "operator": "SVA",
+        "type_code": "777-300ER",
+        "ordered": 20,
+        "delivered": 20,
+        "in_fleet": null,
+        "locator": "Order Total measure, grouped by Customer Name and Model Series"
+      },
+      {
+        "customer": "Saudia",
+        "operator": "SVA",
+        "type_code": "747-300",
+        "ordered": 10,
+        "delivered": 10,
+        "in_fleet": null,
+        "locator": "Order Total measure, grouped by Customer Name and Model Series"
+      },
+      {
+        "customer": "Saudia",
+        "operator": "SVA",
+        "type_code": "787-9",
+        "ordered": 26,
+        "delivered": 8,
+        "in_fleet": null,
+        "locator": "Order Total measure, grouped by Customer Name and Model Series"
+      },
+      {
+        "customer": "Saudia",
+        "operator": "SVA",
+        "type_code": "787-10",
+        "ordered": 29,
+        "delivered": 8,
+        "in_fleet": null,
+        "locator": "Order Total measure, grouped by Customer Name and Model Series"
+      },
+      {
+        "customer": "Saudia",
+        "operator": "SVA",
+        "type_code": "777F",
+        "ordered": 4,
+        "delivered": 0,
+        "in_fleet": null,
+        "locator": "Order Total measure, grouped by Customer Name and Model Series"
+      },
+      {
+        "customer": "Saudia",
+        "operator": "SVA",
+        "type_code": "747-400",
+        "ordered": 5,
+        "delivered": 5,
+        "in_fleet": null,
+        "locator": "Order Total measure, grouped by Customer Name and Model Series"
+      },
+      {
+        "customer": "Saudia",
+        "operator": "SVA",
+        "type_code": "777-200ER",
+        "ordered": 23,
+        "delivered": 23,
+        "in_fleet": null,
+        "locator": "Order Total measure, grouped by Customer Name and Model Series"
+      },
+      {
+        "customer": "Saudia",
+        "operator": "SVA",
+        "type_code": "MD-11",
+        "ordered": 4,
+        "delivered": 4,
+        "in_fleet": null,
+        "locator": "Order Total measure, grouped by Customer Name and Model Series"
+      },
+      {
+        "customer": "Saudia",
+        "operator": "SVA",
+        "type_code": "MD-90",
+        "ordered": 29,
+        "delivered": 29,
+        "in_fleet": null,
+        "locator": "Order Total measure, grouped by Customer Name and Model Series"
+      },
+      {
+        "customer": "Saudia",
+        "operator": "SVA",
+        "type_code": "747-100",
+        "ordered": 10,
+        "delivered": 10,
+        "in_fleet": null,
+        "locator": "Order Total measure, grouped by Customer Name and Model Series"
+      }
+    ],
+    "note": "Public Boeing Tableau export, cumulative named-customer orders and deliveries. Reporting cutoff is not supplied by this export; the displayed date is retrieval date only. Order Total is preserved as reported, without assuming ASC 606 adjustments or reallocating unidentified/lessor orders. Announcements may differ from booked orders."
+  }
+]

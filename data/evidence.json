@@ -1,0 +1,50 @@
+[
+  {
+    "id": "b787-69477-first-20260707",
+    "manufacturer": "BOEING", "operator": "RXI", "type_code": "787-9",
+    "msn": "69477", "registration": "HZ-RXAG", "line_number": "1312",
+    "milestone": "FIRST", "observed_on": "2026-07-07", "checked_on": "2026-09-09",
+    "status": "reported", "summary": "The independent B787 Register records a first flight on this date. Primary confirmation has not been attached.",
+    "sources": [{"publisher": "B787 Register", "category": "enthusiast", "url": "https://www.b787register.co.uk/airframe.php?ln=1312", "origin_id": "b787register-1312-first"}]
+  },
+  {
+    "id": "b787-69477-delivery-20260729",
+    "manufacturer": "BOEING", "operator": "RXI", "type_code": "787-9",
+    "msn": "69477", "registration": "HZ-RXAG", "line_number": "1312",
+    "milestone": "DELIVERY", "observed_on": "2026-07-29", "checked_on": "2026-09-09",
+    "status": "reported", "summary": "The independent register records delivery to Riyadh Air. This is a reported handover, not a flight-track determination.",
+    "sources": [{"publisher": "B787 Register", "category": "enthusiast", "url": "https://www.b787register.co.uk/airframe.php?ln=1312", "origin_id": "b787register-1312-delivery"}]
+  },
+  {
+    "id": "b787-69476-first-20260619",
+    "manufacturer": "BOEING", "operator": "RXI", "type_code": "787-9",
+    "msn": "69476", "registration": "HZ-RXAF", "line_number": "1307",
+    "milestone": "FIRST", "observed_on": "2026-06-19", "checked_on": "2026-09-09",
+    "status": "reported", "summary": "First-flight date reported in the independent register's aircraft history.",
+    "sources": [{"publisher": "B787 Register", "category": "enthusiast", "url": "https://www.b787register.co.uk/airframe.php?ln=1307", "origin_id": "b787register-1307-first"}]
+  },
+  {
+    "id": "b787-69476-delivery-20260703",
+    "manufacturer": "BOEING", "operator": "RXI", "type_code": "787-9",
+    "msn": "69476", "registration": "HZ-RXAF", "line_number": "1307",
+    "milestone": "DELIVERY", "observed_on": "2026-07-03", "checked_on": "2026-09-09",
+    "status": "reported", "summary": "Delivery to Riyadh Air reported by the independent register.",
+    "sources": [{"publisher": "B787 Register", "category": "enthusiast", "url": "https://www.b787register.co.uk/airframe.php?ln=1307", "origin_id": "b787register-1307-delivery"}]
+  },
+  {
+    "id": "b787-69474-first-20260308",
+    "manufacturer": "BOEING", "operator": "RXI", "type_code": "787-9",
+    "msn": "69474", "registration": "HZ-RXAD", "line_number": "1290",
+    "milestone": "FIRST", "observed_on": "2026-03-08", "checked_on": "2026-09-09",
+    "status": "reported", "summary": "The independent register dates the aircraft's first flight to 8 March. Any difference from older app history needs reconciliation.",
+    "sources": [{"publisher": "B787 Register", "category": "enthusiast", "url": "https://www.b787register.co.uk/airframe.php?ln=1290", "origin_id": "b787register-1290-first"}]
+  },
+  {
+    "id": "b787-69474-delivery-20260617",
+    "manufacturer": "BOEING", "operator": "RXI", "type_code": "787-9",
+    "msn": "69474", "registration": "HZ-RXAD", "line_number": "1290",
+    "milestone": "DELIVERY", "observed_on": "2026-06-17", "checked_on": "2026-09-09",
+    "status": "reported", "summary": "Delivery to Riyadh Air reported in the independent aircraft history.",
+    "sources": [{"publisher": "B787 Register", "category": "enthusiast", "url": "https://www.b787register.co.uk/airframe.php?ln=1290", "origin_id": "b787register-1290-delivery"}]
+  }
+]

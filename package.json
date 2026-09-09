@@ -16,9 +16,12 @@
     "build": "npm --prefix web run build",
     "start": "node server/bridge.js",
     "seed": "node server/seed.js",
-    "orders:import": "node server/import-orders.js"
+    "orders:import": "node server/import-orders.js",
+    "evidence:import": "node server/import-evidence.js",
+    "reports:export": "node server/refresh-reports.js"
   },
   "dependencies": {
+    "exceljs": "4.4.0",
     "express": "^4.19.2",
     "ioredis": "^5.4.1",
     "pg": "^8.12.0",
